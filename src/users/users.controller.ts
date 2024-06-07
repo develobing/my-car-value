@@ -20,6 +20,7 @@ import { AuthService } from './auth.service';
 import { User } from './user.entity';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { AuthGuard } from '../guards/auth.guard';
+import { AdminGuard } from 'src/guards/admin.guard';
 
 @Controller('auth')
 @Serialize(UserDto)
@@ -61,6 +62,13 @@ export class UsersController {
     if (!user) throw new NotFoundException('user not found');
 
     return user;
+  }
+
+  @Patch('/:id/admin')
+  @UseGuards(AuthGuard)
+  @UseGuards(AdminGuard)
+  async changeAdmin(@Param('id') id: string, @Body() body: { admin: boolean }) {
+    return this.usersService.update(parseInt(id), { admin: body.admin });
   }
 
   @Get()
